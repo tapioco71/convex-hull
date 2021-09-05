@@ -1,7 +1,8 @@
 # convex-hull
 ### Angelo Rossi <angelo.rossi.homelab@gmail.com>
 
-A simple project to compute the convex hull of a set of points in xy plane.
+A simple project to compute the convex hull of a set of points in xy 
+plane.
 
 ## License
 
@@ -25,15 +26,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-
 The algorithm is a modified Graham's scan from 
 https://cp-algorithms.com/geometry/grahams-scan-convex-hull.html
 To use the program just type:
 
-CL-USER> (cvh:main #(0d0 1d0 1d0 0.5d0  0d0)
-                   #(0d0 0d0 1d0 0.75d0 1d0)
-                   :point-positions-list '(1 2 3 4 5)
-                   :verbose t)
+CL-USER> (cvh::main #(0d0 2d0 0d0 2d0 0d0 2d0 0d0 2d0 0d0 2d0 4d0 4d0 6d0 6d0 8d0 8d0)
+                    #(0d0 0d0 2d0 2d0 4d0 4d0 6d0 6d0 8d0 8d0 6d0 8d0 6d0 8d0 6d0 8d0))
+((:POSITION 1 :COORDINATES #m(0.000000000000000d0 0.000000000000000d0))
+ (:POSITION 2 :COORDINATES #m(2.000000000000000d0 0.000000000000000d0))
+ (:POSITION 15 :COORDINATES #m(8.000000000000000d0 6.000000000000000d0))
+ (:POSITION 16 :COORDINATES #m(8.000000000000000d0 8.000000000000000d0))
+ (:POSITION 9 :COORDINATES #m(0.000000000000000d0 8.000000000000000d0))
+ (:POSITION 1 :COORDINATES #m(0.000000000000000d0 0.000000000000000d0)))
+CL-USER>
                    
 The verbosity could be omitted for zero messages from the program. first input
 is the x array for the points, the second is the y coordinates array for the same
