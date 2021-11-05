@@ -25,6 +25,13 @@
 
 ;; Functions.
 
+ (defun make-path (a)
+   (check-type a list)
+   (loop
+     for i from 0 below (1- (length a))
+     for j from (1+ i)
+     collect (list (nth i a)
+		   (nth j a))))
 
 (defun cw (p1 p2 p3)
   "cw return true if p1 p2 and p3 make a clockwise turn."
@@ -189,8 +196,9 @@
     (setq points-position-list (loop
                                   for i from 1 upto (grid:dim0 x-array)
                                   collect i)))
-  (convex-hull (grid:copy-to x-array 'grid:foreign-array 'double-float)
-               (grid:copy-to y-array 'grid:foreign-array 'double-float)
-               :points-position-list points-position-list
-               :verbose verbose))
+  (make-path (convex-hull (grid:copy-to x-array 'grid:foreign-array 'double-float)
+                          (grid:copy-to y-array 'grid:foreign-array 'double-float)
+                          :points-position-list points-position-list
+                          :verbose verbose)))
+
 
