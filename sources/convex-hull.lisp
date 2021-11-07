@@ -65,58 +65,43 @@
         (* (grid:gref p3 0) (- (grid:gref p1 1) (grid:gref p2 1))))
      0d0))
 
-(defun sort-points (x-array y-array &rest parameters &key
-                                                       (points-position-list nil points-position-list-p)
-                                                       (verbose nil))
+(defun sort-points (points-list &rest parameters &key
+                                                   (verbose nil))
   "Sorts point in respect the angular position of point."
   (declare (ignorable parameters
-                      points-position-list
                       verbose))
-  (check-type x-array grid:foreign-array)
-  (assert (= (length (grid:dimensions x-array)) 1))
-  (check-type y-array grid:foreign-array)
-  (assert (= (length (grid:dimensions y-array)) 1))
-  (assert (equalp (grid:dimensions x-array)
-                  (grid:dimensions y-array)))
-  (check-type points-position-list list)
-  (assert (<= (length points-position-list)
-              (grid:dim0 x-array)))
-  (let ((points-list nil)
-        (sorted-points-list nil))
-    (unless points-position-list
-      (setq points-position-list (loop
-                                   for i from 1 upto (grid:dim0 x-array)
-                                   collect i)))
-    (setq points-list (loop
-                        for p in points-position-list
-                        collect (list :position p
-                                      :coordinates (grid:make-foreign-array 'double-float
-                                                                            :dimensions 2
-                                                                            :initial-contents (list (grid:gref x-array (1- p))
-                                                                                                    (grid:gref y-array (1- p)))))))
-    (setq sorted-points-list (sort points-list
-                                   #'(lambda (a b)
-                                       (or (< (grid:gref (getf a :coordinates) 0) (grid:gref (getf b :coordinates) 0))
-                                           (and (= (grid:gref (getf a :coordinates) 0) (grid:gref (getf b :coordinates) 0))
-                                                (< (grid:gref (getf a :coordinates) 1) (grid:gref (getf b :coordinates) 1)))))))
+  (check-type points-list list)
+  (loop
+    for point in points-list
+    do
+       (check-type point grid:foreign-array)
+       (assert (equalp (grid:dimensions point) '(2))))
+  (let ((return-value nil))
     (when verbose
-      (format *standard-output* "Sorted points set: ~s~%" sorted-points-list))
-    sorted-points-list))
+      (format *standard-output* "Entering sort-points. ========~%"))
+    (setq return-value (sort (copy-seq points-list)
+                             #'(lambda (a b)
+                                 (or (< (grid:gref a 0) (grid:gref b 0))
+                                     (and (= (grid:gref a 0) (grid:gref b 0))
+                                          (< (grid:gref a 1) (grid:gref b 1)))))))
+    (when verbose
+      (format *standard-output* "Sorted points set: ~s~%" return-value)
+      (format *standard-output* "Exiting sort-points. ========~%"))
+    return-value))
 
-(defun convex-hull (x-array y-array &rest parameters &key
-                                                       (points-position-list nil points-position-list-p)
-                                                       (verbose nil))
+(defun convex-hull (points-list &rest parameters &key
+                                                   (iterations-limit nil)
+                                                   (verbose nil))
   "Compute the convex hull for points set. Result in a stack."
-  (check-type x-array grid:foreign-array)
-  (assert (= (length (grid:dimensions x-array)) 1))
-  (check-type y-array grid:foreign-array)
-  (assert (= (length (grid:dimensions y-array)) 1))
-  (assert (equalp (grid:dimensions x-array)
-                  (grid:dimensions y-array)))
-  (when points-position-list-p
-    (check-type points-position-list list)
-    (assert (and (>= (length points-position-list) 3)
-                 (<= (length points-position-list) (grid:dim0 x-array)))))
+  (declare (ignorable parameters iterations-limnit verbose))
+  (check-type points-list list)
+  (loop
+    for point in points-list
+    do
+       (check-type point grid:foreign-array)
+       (assert (equalp (grid:dimensions point) '(2))))
+  (when iterations-limit
+    (check-type iterations-limit (integer 1)))
   (let ((sorted-points nil)
         (p1 nil)
         (p2 nil)
@@ -124,13 +109,7 @@
         (down-stack '())
         (points nil)
         (return-value nil))
-    (unless points-position-list
-      (setq points-position-list (loop
-                          for i from 1 upto (grid:dim0 x-array)
-                          collect i)))
-    (setq sorted-points (sort-points x-array
-                                     y-array
-                                     :points-position-list points-position-list
+    (setq sorted-points (sort-points points-list
                                      :verbose verbose))
     (setq p1 (first sorted-points)
           p2 (first (last sorted-points)))
@@ -139,29 +118,31 @@
     (push p1 up-stack)
     (push p1 down-stack)
     (loop
+      named main-loop
       for i from 1 below (length sorted-points)
+      for j from 0
       do
+         (when iterations-limit
+           (when (>= j iterations-limit)
+             (when verbose
+               (format *standard-output*
+                       "Iterations count limit reached (~a).  Stop.~%"
+                       j))
+             (setq return-value nil)
+             (return-from main-loop)))
          (when (or (= i (1- (length sorted-points)))
-                   (cw (getf p1 :coordinates)
-                       (getf (nth i sorted-points) :coordinates)
-                       (getf p2 :coordinates)))
+                   (cw p1 (nth i sorted-points) p2))
            (loop
              while (and (>= (length up-stack) 2)
-                        (not (cw (getf (second up-stack) :coordinates)
-                                 (getf (first up-stack) :coordinates)
-                                 (getf (nth i sorted-points) :coordinates))))
+                        (not (cw (second up-stack) (first up-stack) (nth i sorted-points))))
              do
                 (pop up-stack))
            (push (nth i sorted-points) up-stack))
          (when (or (= i (1- (length sorted-points)))
-                   (ccw (getf p1 :coordinates)
-                        (getf (nth i sorted-points) :coordinates)
-                        (getf p2 :coordinates)))
+                   (ccw p1 (nth i sorted-points)  p2))
            (loop
              while (and (>= (length down-stack) 2)
-                        (not (ccw (getf (second down-stack) :coordinates)
-                                  (getf (first down-stack) :coordinates)
-                                  (getf (nth i sorted-points) :coordinates))))
+                        (not (ccw (second down-stack) (first down-stack) (nth i sorted-points))))
              do
                 (pop down-stack))
            (push (nth i sorted-points) down-stack)))
@@ -172,33 +153,26 @@
                                     up-stack))
     (when verbose
       (format *standard-output* "Convex hull: ~s~%" return-value))
-    return-value))
+    (make-path return-value)))
 
 
-(defun main (x-array y-array &rest parameters &key
-                                                (points-position-list nil points-position-list-p)
-                                                (verbose nil))
+(defun main (points-list &rest parameters &key
+                                            (iterations-limit nil)
+                                            (verbose nil))
   "Main function."
   (declare (ignorable parameters
                       points-position-list
                       verbose))
-  (check-type x-array (array * (*)))
-  (assert (= 1 (length (array-dimensions x-array))))
-  (check-type y-array (array * (*)))
-  (assert (= 1 (length (array-dimensions y-array))))
-  (assert (equalp (array-dimensions x-array)
-                  (array-dimensions y-array)))
-  (when points-position-list-p
-    (check-type points-position-list list)
-    (assert (and (>= (length points-position-list) 3)
-                 (<= (length points-position-list) (grid:dim0 x-array)))))
-  (unless points-position-list
-    (setq points-position-list (loop
-                                  for i from 1 upto (grid:dim0 x-array)
-                                  collect i)))
-  (make-path (convex-hull (grid:copy-to x-array 'grid:foreign-array 'double-float)
-                          (grid:copy-to y-array 'grid:foreign-array 'double-float)
-                          :points-position-list points-position-list
-                          :verbose verbose)))
+  (check-type points-list list)
+  (loop
+    for point in points-list
+    do
+       (check-type point grid:foreign-array)
+       (assert (equalp (grid:dimensions point) '(2))))
+  (when iterations-limit
+    (check-type iterations-limit (integer 1)))
+  (convex-hull points-list
+               :iterations-limit iterations-limit
+               :verbose verbose))
 
 
