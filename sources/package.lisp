@@ -25,4 +25,5 @@
   (:nicknames #:cvh)
   (:use #:cl)
   (:export #:main
+           #:perimeter
            #:convex-hull))

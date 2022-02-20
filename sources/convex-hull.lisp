@@ -78,7 +78,8 @@
        (assert (equalp (grid:dimensions point) '(2))))
   (let ((return-value nil))
     (when verbose
-      (format *standard-output* "Entering sort-points. ========~%"))
+      (format *standard-output* "Entering sort-points. ========~%")
+      (finish-output *standard-output*))
     (setq return-value (sort (copy-seq points-list)
                              #'(lambda (a b)
                                  (or (< (grid:gref a 0) (grid:gref b 0))
@@ -86,7 +87,28 @@
                                           (< (grid:gref a 1) (grid:gref b 1)))))))
     (when verbose
       (format *standard-output* "Sorted points set: ~s~%" return-value)
-      (format *standard-output* "Exiting sort-points. ========~%"))
+      (format *standard-output* "Exiting sort-points. ========~%")
+      (finish-output *standard-output*))
+    return-value))
+
+(defun perimeter (points-list &rest parameters &key (verbose nil))
+  "Compute the perimeter for the convex hull."
+  (declare (ignorable parameters verbose))
+  (check-type points-list list)
+  (let ((return-value nil))
+    (when verbose
+      (format *standard-output* "Entering perimeter. ========~%")
+      (format *standard-output* "Input convex hull set: ~a~%" points-list)
+      (finish-output *standard-output*))
+    (setq return-value (loop
+                         for p in points-list
+                         sum (gsll:euclidean-norm (reduce #'(lambda (x y)
+                                                              (gsll:elt- (grid:copy x) (grid:copy y)))
+                                                          p))))
+    (when verbose
+      (format *standard-output* "Perimeter value: ~a~%" return-value)
+      (format *standard-output* "Exiting sort-points. ========~%")
+      (finish-output *standard-output*))
     return-value))
 
 (defun convex-hull (points-list &rest parameters &key
@@ -114,7 +136,8 @@
     (setq p1 (first sorted-points)
           p2 (first (last sorted-points)))
     (when verbose
-      (format *standard-output* "Leftmost point: ~a~%Rightmost point: ~a~%" p1 p2))
+      (format *standard-output* "Leftmost point: ~a~%Rightmost point: ~a~%" p1 p2)
+      (finish-output *standard-output*))
     (push p1 up-stack)
     (push p1 down-stack)
     (loop
@@ -127,7 +150,8 @@
              (when verbose
                (format *standard-output*
                        "Iterations count limit reached (~a).  Stop.~%"
-                       j))
+                       j)
+               (finish-output *standard-output*))
              (setq return-value nil)
              (return-from main-loop)))
          (when (or (= i (1- (length sorted-points)))
@@ -147,12 +171,14 @@
                 (pop down-stack))
            (push (nth i sorted-points) down-stack)))
     (when verbose
-      (format *standard-output* "Down stack: ~s~%Up stack: ~s~%" down-stack up-stack))
+      (format *standard-output* "Down stack: ~s~%Up stack: ~s~%" down-stack up-stack)
+      (finish-output *standard-output*))
     (setq return-value (concatenate 'list
                                     (subseq (reverse down-stack) 0 (1- (length down-stack)))
                                     up-stack))
     (when verbose
-      (format *standard-output* "Convex hull: ~s~%" return-value))
+      (format *standard-output* "Convex hull: ~s~%" return-value)
+      (finish-output *standard-output*))
     (make-path return-value)))
 
 
@@ -174,5 +200,3 @@
   (convex-hull points-list
                :iterations-limit iterations-limit
                :verbose verbose))
-
-
