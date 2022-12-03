@@ -22,7 +22,7 @@
 ;;; SOFTWARE.
 
 (asdf:defsystem #:convex-hull
-  :description "Describe convex-hull here"
+  :description "Compute the convex hull vertices set for the provided points set."
   :author "Angelo Rossi <angelo.rossi.homelab@gmail.com>"
   :license  "BSD"
   :version "0.0.1"
