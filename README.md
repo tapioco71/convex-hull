@@ -32,23 +32,36 @@ The algorithm is a modified Graham's scan from
 https://cp-algorithms.com/geometry/grahams-scan-convex-hull.html
 To use the program just type:
 
-CL-USER> (cvh::main #(0d0 2d0 0d0 2d0 0d0 2d0 0d0 2d0 0d0 2d0 4d0 4d0 6d0 6d0 8d0 8d0)
-                    #(0d0 0d0 2d0 2d0 4d0 4d0 6d0 6d0 8d0 8d0 6d0 8d0 6d0 8d0 6d0 8d0))
-((:POSITION 1 :COORDINATES #m(0.000000000000000d0 0.000000000000000d0))
- (:POSITION 2 :COORDINATES #m(2.000000000000000d0 0.000000000000000d0))
- (:POSITION 15 :COORDINATES #m(8.000000000000000d0 6.000000000000000d0))
- (:POSITION 16 :COORDINATES #m(8.000000000000000d0 8.000000000000000d0))
- (:POSITION 9 :COORDINATES #m(0.000000000000000d0 8.000000000000000d0))
- (:POSITION 1 :COORDINATES #m(0.000000000000000d0 0.000000000000000d0)))
+CL-USER> (cvh::main (list (grid:copy-to #(0d0 0d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(2d0 0d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(0d0 2d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(2d0 2d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(0d0 4d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(2d0 4d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(0d0 6d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(2d0 6d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(0d0 8d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(2d0 8d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(4d0 6d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(4d0 8d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(6d0 6d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(6d0 8d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(8d0 6d0) 'grid:foreign-array 'double-float)
+                          (grid:copy-to #(8d0 8d0) 'grid:foreign-array 'double-float)))
+((#m(0.000000000000000d0 0.000000000000000d0)
+  #m(2.000000000000000d0 0.000000000000000d0))
+ (#m(2.000000000000000d0 0.000000000000000d0)
+  #m(8.000000000000000d0 6.000000000000000d0))
+ (#m(8.000000000000000d0 6.000000000000000d0)
+  #m(8.000000000000000d0 8.000000000000000d0))
+ (#m(8.000000000000000d0 8.000000000000000d0)
+  #m(0.000000000000000d0 8.000000000000000d0))
+ (#m(0.000000000000000d0 8.000000000000000d0)
+  #m(0.000000000000000d0 0.000000000000000d0)))
 CL-USER>
 
-The verbosity could be omitted for zero messages from the program. first input
-is the x array for the points, the second is the y coordinates array for the same
-points. The third is a list containing the positions of the points in the two arrays
-x and y to use in the computation. If this parameter is omitted all the points are
-used for the computation. The result is a list of point of the type:
-
-((:position 1 :coordinates #(0d0 0d0))
- (:position 2 :coordinates #(1d0 0d0))
- (:position 3 :coordinates #(1d0 1d0))
- (:position 5 :coordinates #(0d0 1d0)))
+The verbosity could be omitted for zero messages from the program. The input is
+a list of grid:foreign-array (dimension 2) for the vertex points.
+The second input is the maximum number of iterations admitted for computations.
+The third is the verbose flag and could be nil or t. The function returns
+the couple of vertices identifying a polygon edge.
