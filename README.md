@@ -32,6 +32,7 @@ The algorithm is a modified Graham's scan from
 https://cp-algorithms.com/geometry/grahams-scan-convex-hull.html
 To use the program just type:
 
+```
 CL-USER> (cvh::main (mapcar #'(lambda (x)
                                 (grid:make-foreign-array 'double-float
                                                          :initial-contents x))
@@ -62,6 +63,7 @@ CL-USER> (cvh::main (mapcar #'(lambda (x)
  (#m(0.000000000000000d0 8.000000000000000d0)
   #m(0.000000000000000d0 0.000000000000000d0)))
 CL-USER>
+```
 
 The verbosity could be omitted for zero messages from the program. The input is
 a list of grid:foreign-array (dimension 2) for the vertex points.
