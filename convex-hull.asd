@@ -1,7 +1,7 @@
 ;;;; -*- mode: lisp; syntax: ANSI-Common-Lisp; indent-tabs-mode: nil; coding: utf-8; show-trailing-whitespace: t -*-
 ;;;; convex-hull.asd
 ;;;;
-;;;; Copyright (c) 2020 Angelo Rossi
+;;;; Copyright (c) 2020-2022 Angelo Rossi
 ;;;
 ;;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;;; of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 ;;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 ;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;; SOFTWARE.
-;;;; package.lisp
-;;;; convex-hull.asd
 
 (asdf:defsystem #:convex-hull
   :description "Describe convex-hull here"
