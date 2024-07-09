@@ -1,4 +1,4 @@
-;;;; -*- mode: lisp; syntax: ANSI-Common-Lisp; indent-tabs-mode: nil; coding: utf-8; show-trailing-whitespace: t -*-
+;;;; -*- mode: lisp-mode; indent-tabs-mode: nil; coding: utf-8; show-trailing-whitespace: t -*-
 ;;;; convex-hull.asd
 ;;;;
 ;;;; Copyright (c) 2020-2022 Angelo Rossi
